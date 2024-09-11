@@ -8,13 +8,13 @@ import (
 )
 
 type Transaction struct {
-	ID            string
-	AccountFrom   *Account `gorm:"foreignKey:AccountFromID"`
-	AccountFromID string
-	AccountTo     *Account `gorm:"foreignKey:AccountToID"`
-	AccountToID   string
-	Amount        float64
-	CreatedAt     time.Time
+	ID            string    `json:"id"`
+	AccountFrom   *Account  `json:"account_from"`
+	AccountFromID string    `json:"account_id_from"`
+	AccountTo     *Account  `json:"account_to"`
+	AccountToID   string    `json:"account_id_to"`
+	Amount        float64   `json:"amount"`
+	CreatedAt     time.Time `json:"created_at"`
 }
 
 func NewTransaction(accountFrom *Account, accountTo *Account, amount float64) (*Transaction, error) {

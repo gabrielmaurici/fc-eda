@@ -2,7 +2,7 @@ version: '3'
 
 services:
   goapp: 
-    build: .
+    build: ./
     platform: linux/amd64
     volumes:
       - .:/app
@@ -20,9 +20,10 @@ services:
       - 3306:3306
     volumes:
       - .docker/mysql:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   zookeeper:
-    image: "confluentinc/cp-zookeeper:6.1.0"
+    image: "confluentinc/cp-zookeeper:latest"
     container_name: zookeeper
     ports:
       - 2181:2181
@@ -32,7 +33,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
 
   kafka:
-    image: "confluentinc/cp-enterprise-kafka:6.1.0"
+    image: "confluentinc/cp-enterprise-kafka:latest"
     container_name: kafka
     depends_on:
       - zookeeper
