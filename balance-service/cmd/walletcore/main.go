@@ -16,6 +16,11 @@ import (
 )
 
 type BalanceUpdatedKafkaDto struct {
+	Name    string                     `json:"Name"`
+	Payload BalanceUpdatedKafkaPayload `json:"Payload"`
+}
+
+type BalanceUpdatedKafkaPayload struct {
 	AccountIDFrom        string  `json:"account_id_from"`
 	AccountIDTo          string  `json:"account_id_to"`
 	BalanceAccountIDFrom float64 `json:"balance_account_id_from"`
@@ -49,7 +54,6 @@ func main() {
 
 	go func() {
 		for msg := range msgChan {
-			fmt.Printf("Recebido: %s\n", string(msg.Value))
 			msgHandle, err := handleMessage(msg)
 			if err != nil {
 				fmt.Printf("Erro handle message kafka: %s\n", err.Error())
@@ -57,12 +61,12 @@ func main() {
 			}
 
 			updateBalanceFrom := update_account_balance.UpdateAccountBalanceInputDto{
-				AccountId: msgHandle.AccountIDFrom,
-				Amount:    msgHandle.BalanceAccountIDFrom,
+				AccountId: msgHandle.Payload.AccountIDFrom,
+				Amount:    msgHandle.Payload.BalanceAccountIDFrom,
 			}
 			updateBalanceTo := update_account_balance.UpdateAccountBalanceInputDto{
-				AccountId: msgHandle.AccountIDTo,
-				Amount:    msgHandle.BalanceAccountIDTo,
+				AccountId: msgHandle.Payload.AccountIDTo,
+				Amount:    msgHandle.Payload.BalanceAccountIDTo,
 			}
 
 			go updateAccountBalanceUseCase.Execute(updateBalanceFrom)
@@ -78,11 +82,12 @@ func main() {
 }
 
 func handleMessage(msg *ckafka.Message) (*BalanceUpdatedKafkaDto, error) {
+	fmt.Println("Mensagem Kafka recebida:", string(msg.Value))
 	var dto BalanceUpdatedKafkaDto
 	err := json.Unmarshal(msg.Value, &dto)
 	if err != nil {
-		fmt.Println("Erro ao desserializar a mensagem:", err)
 		return nil, err
 	}
+
 	return &dto, nil
 }

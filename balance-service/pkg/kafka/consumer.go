@@ -27,11 +27,9 @@ func (c *Consumer) Consume(msgChan chan *ckafka.Message) error {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("consumer " + consumer.String())
 	for {
 		msg, err := consumer.ReadMessage(-1)
 		if err == nil {
-			fmt.Println("balance chegando " + msg.String())
 			msgChan <- msg
 		} else {
 			fmt.Println("erro ao ler a mensagem")
