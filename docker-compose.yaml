@@ -1,15 +1,15 @@
 version: '3'
 
 services:
-  goapp: 
-    build: ./
+  goapp-balance: 
+    build: ./balance-service
     platform: linux/amd64
     volumes:
-      - .:/app
+      - ./balance-service:/app
     ports:
-      - 8080:8080
+      - 3003:3003
 
-  mysql:
+  mysql-balance:
     image: mysql:5.7
     platform: linux/amd64
     environment:
@@ -19,8 +19,29 @@ services:
     ports:
       - 3306:3306
     volumes:
-      - .docker/mysql:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./balance-service/.docker/mysql:/var/lib/mysql
+      - ./balance-service/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  goapp-wallet: 
+    build: ./wallet-service
+    platform: linux/amd64
+    volumes:
+      - ./wallet-service:/app
+    ports:
+      - 8080:8080
+
+  mysql-wallet:
+    image: mysql:5.7
+    platform: linux/amd64
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wallet
+      MYSQL_PASSWORD: root
+    ports:
+      - 3307:3306
+    volumes:
+      - ./wallet-service/.docker/mysql:/var/lib/mysql
+      - ./wallet-service/init.sql:/docker-entrypoint-initdb.d/init.sql
 
   zookeeper:
     image: "confluentinc/cp-zookeeper:latest"
