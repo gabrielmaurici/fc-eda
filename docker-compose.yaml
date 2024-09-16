@@ -4,6 +4,9 @@ services:
   goapp-balance: 
     build: ./balance-service
     platform: linux/amd64
+    command: >
+      dockerize -wait tcp://mysql-balance:3306 -wait tcp://kafka:9092 -timeout 40s
+      go run ./cmd/walletcore/main.go
     volumes:
       - ./balance-service:/app
     ports:
@@ -28,6 +31,9 @@ services:
   goapp-wallet: 
     build: ./wallet-service
     platform: linux/amd64
+    command: >
+      dockerize -wait tcp://mysql-wallet:3306 -wait tcp://kafka:9092 -timeout 40s
+      go run ./cmd/walletcore/main.go
     volumes:
       - ./wallet-service:/app
     ports:
